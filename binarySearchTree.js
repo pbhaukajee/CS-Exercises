@@ -91,6 +91,134 @@ class Tree {
     }
     return node;
   }
+
+  findNode(node, value) {
+    if (node === null || node.data === value) {
+      return node;
+    }
+
+    if (value < node.data) {
+      return this.findMinNode(node.left, value);
+    } else {
+      return this.findMinNode(node.right, value);
+    }
+  }
+
+  levelOrder(callback, queue = [this.root], result = []) {
+    if (!this.root) {
+      return [];
+    }
+
+    if (!queue.length) {
+      return result;
+    }
+
+    const currentNode = queue.shift();
+
+    if (callback) {
+      callback(currentNode);
+    } else {
+      result.push(currentNode.data);
+    }
+
+    if (currentNode.left) {
+      queue.push(currentNode.left);
+    }
+
+    if (currentNode.right) {
+      queue.push(currentNode.right);
+    }
+
+    return this.levelOrder(callback, queue, result);
+  }
+
+  inOrder(callback, node = this.root, result = []) {
+    if (!node) {
+      return result;
+    }
+
+    this.inOrder(callback, node.left, result);
+
+    if (callback) {
+      callback(node);
+    } else {
+      result.push(node.data);
+    }
+
+    this.inOrder(callback, node.right, result);
+
+    return result;
+  }
+
+  preOrder(callback, node = this.root, result = []) {
+    if (!node) {
+      return result;
+    }
+
+    if (callback) {
+      callback(node);
+    } else {
+      result.push(node.data);
+    }
+
+    this.preOrder(callback, node.left, result);
+    this.preOrder(callback, node.right, result);
+
+    return result;
+  }
+
+  postOrder(callback, node = this.root, result = []) {
+    if (!node) {
+      return result;
+    }
+
+    this.postOrder(callback, node.left, result);
+    this.postOrder(callback, node.right, result);
+
+    if (callback) {
+      callback(node);
+    } else {
+      result.push(node.data);
+    }
+
+    return result;
+  }
+
+  height(node) {
+    if (!node) {
+      return -1;
+    }
+
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    return Math.max(leftHeight, rightHeight) + 1;
+  }
+
+  depth(node) {
+    if (!node) {
+      return -1;
+    }
+
+    const parentDepth = this.depth(node.parent);
+
+    return parentDepth + 1;
+  }
+
+  isBalanced(node = this.root) {
+    if (!node) {
+      return true;
+    }
+
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+      return false;
+    }
+
+    return this.isBalanced(node.left) && this.isBalanced(node.right);
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -121,3 +249,43 @@ prettyPrint(tree.root);
 tree.deleteItem(23);
 console.log("After deleting 23:");
 prettyPrint(tree.root);
+
+console.log("Level order traversal with recursion:");
+tree.levelOrder((node) => {
+  console.log(node.data);
+});
+console.log("Level order traversal with recursion (no callback):");
+console.log(tree.levelOrder());
+
+// Using inOrder with callback
+console.log("In-order traversal:");
+tree.inOrder((node) => {
+  console.log(node.data);
+});
+
+// Using inOrder without callback
+console.log("In-order traversal (no callback):");
+console.log(tree.inOrder());
+
+// Using preOrder with callback
+console.log("Pre-order traversal:");
+tree.preOrder((node) => {
+  console.log(node.data);
+});
+
+// Using preOrder without callback
+console.log("Pre-order traversal (no callback):");
+console.log(tree.preOrder());
+
+// Using postOrder with callback
+console.log("Post-order traversal:");
+tree.postOrder((node) => {
+  console.log(node.data);
+});
+
+// Using postOrder without callback
+console.log("Post-order traversal (no callback):");
+console.log(tree.postOrder());
+
+// Calculate and print the height of the root node
+console.log("Height of the root node:", tree.height(tree.root));
