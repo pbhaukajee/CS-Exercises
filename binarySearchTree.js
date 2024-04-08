@@ -219,6 +219,11 @@ class Tree {
 
     return this.isBalanced(node.left) && this.isBalanced(node.right);
   }
+
+  rebalance() {
+    const nodes = this.inOrder();
+    this.root = this.buildTree(nodes);
+  }
 }
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
